@@ -18,4 +18,15 @@ clone poky (reference distribution) kirkstone branch (LTS)
 mkdir yocto && cd yocto
 git clone -b kirkstone http://git.yoctoproject.org/git/poky
 cd poky 
-``` 
+```
+clone raspberrypi meta-layer kirkstone branch as well
+
+```
+git clone -b kirkstone git://git.yoctoproject.org/meta-raspberrypi 
+```
+list supported raspberrypi boards execute following commad:
+```
+ls poky/meta-raspberrypi/conf/machine
+```
+
+
