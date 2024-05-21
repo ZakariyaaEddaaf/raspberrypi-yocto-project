@@ -29,4 +29,8 @@ list supported raspberrypi boards execute following commad:
 ls poky/meta-raspberrypi/conf/machine
 ```
 
+install python3 in the image, add the following to local.conf
 
+```
+IMAGE_INSTALL:append = " python3"
+```
