@@ -58,7 +58,7 @@ Shell environment set up for builds, saved under "conf-notes.txt" file
 cat meta/conf/conf-notes.txt
 ```
 
-## Basic Yocto layer
+## Basic Yocto layer (Create and add layer)
 
 Show existing layers, run following command
 ```
@@ -74,26 +74,36 @@ bitbake-layers add-layer ../meta-eddaaf
 ```
 create a directory inside "meta-eddaaf"
 
-## Basic Yocto Recipes
+## Basic Yocto Recipes (Write and add the Recipe)
 
-create a recipes, run following commands
+create a recipe, run following commands
 ```
-mkdir meta-customlayer/recipes-eddaaf
-mkdir meta-customlayer/recipes-eddaaf/files
-touch meta-customlayer/recipes-eddaaf/files/main.cpp
-mkdir meta-customlayer/recipes-eddaaf/hello-world-cpp
-touch meta-customlayer/recipes-eddaaf/hello_world_cpp.bb
-
+mkdir meta-eddaaf/recipes-eddaaf
+mkdir meta-eddaaf/recipes-eddaaf/helloworld
+mkdir meta-eddaaf/recipes-eddaaf/helloworld/files
+touch meta-eddaaf/recipes-eddaaf/helloworld/files/main.cpp
+touch meta-eddaaf/recipes-eddaaf/helloworld/helloworld_0.1.bb
 ```
-├── conf
-│   └── layer.conf
-├── COPYING.MIT
-├── README
-├── recipes-eddaaf
-│   ├── files
-│   │   └── main.cpp
-│   ├── hello-world-cpp
-│   └── hello_world_cpp.bb
-└── recipes-example
-    └── example
-        └── example_0.1.bb
+File structure (tree)
+```.
+├── conf\
+│   └── layer.conf\
+├── COPYING.MIT\
+├── README\
+├── recipes-eddaaf\
+│   └── hello-world-cpp\
+│       ├── files\
+│       │   └── main.cpp\
+│       └── hello_world_cpp.bb\
+└── recipes-example\
+    └── example\
+        └── example_0.1.bb\
+```
+Some common terms used in recipes:
+```
+${WORKDIR} - this is the location inside of your build (after you run source oe-init-build-env) and is referring to: build/tmp/work/<machine_architecture>/<recipe_name>/<recipe_version>
+${PN} - Package name, i.e., name of the recipe. Same as the name you gave your .bb file.
+${PV} - Package version, i.e., version of the recipe.
+SRC_URI = “the file your recipe is built off of.” This can be a .zip, .c, or whichever file you need to build your recipe with.
+md5, sha256 - these can be found by typing “openssl md5 <file_name>” into the command line.
+```
