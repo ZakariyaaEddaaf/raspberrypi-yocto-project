@@ -115,3 +115,28 @@ ${PV} - Package version, i.e., version of the recipe.
 SRC_URI = “the file your recipe is built off of.” This can be a .zip, .c, or whichever file you need to build your recipe with.
 md5, sha256 - these can be found by typing “openssl md5 <file_name>” into the command line.
 ```
+## Basic Yocto image (customizing images using .bb)
+create image based on core-image-minimal
+```
+mkdir /meta-eddaaf/recipes-eddaaf/images
+touch /meta-eddaaf/recipes-eddaaf/images/eddaaf-image-minimal.bb
+```
+copy to eddaf-image-minimal.bb
+```
+SUMMARY = "A small image just capable of allowing a device to boot."
+
+IMAGE_INSTALL = "packagegroup-core-boot ${CORE_IMAGE_EXTRA_INSTALL} helloworld"
+IMAGE_FEATURES += " ssh-server-dropbear"
+
+IMAGE_LINGUAS = " "
+
+LICENSE = "MIT"
+
+inherit core-image
+
+IMAGE_ROOTFS_SIZE ?= "8192"
+IMAGE_ROOTFS_EXTRA_SPACE:append = "${@bb.utils.contains("DISTRO_FEATURES", "systemd", " + 4096", "", d)}"
+```
+
+
+
