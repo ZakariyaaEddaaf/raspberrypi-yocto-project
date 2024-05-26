@@ -57,6 +57,14 @@ Shell environment set up for builds, saved under "conf-notes.txt" file
 ```
 cat meta/conf/conf-notes.txt
 ```
+Extract bz2, run following command.
+```
+bunzip2 eddaaf-image-minimal-raspberrypi4-64-20240526073202.rootfs.wic.bz2
+```
+Flash image to Sd-card, run following command. Note:Be carefull of using this command.
+```
+sudo dd if=eddaaf-image-minimal-raspberrypi4-64-20240526073202.rootfs.wic of=/dev/sda bs=4M status=progress
+```
 
 ## Basic Yocto layer (Create and add layer)
 
