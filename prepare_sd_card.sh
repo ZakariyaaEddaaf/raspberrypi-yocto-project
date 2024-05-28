@@ -31,8 +31,30 @@ umount_partitions()
     fi
 }
 
+erase_sd_card() 
+{
+    echo ">> Erasing SD-Card..."
+    if ls /dev/sda* >/dev/null 2>&1; then
+        read -p ">> Are you sure you want to erase /dev/sda? (yes/y/no): " confirm
+        if [[ "$confirm" == "yes" || "$confirm" == "y" ]]; then
+            echo ">> Erasing in progress..."
+            dd if=/dev/zero of=/dev/sda bs=1024M status=progress
+            if [ $? -eq 0 ]; then
+                echo ">> Erasing completed successfully."
+            else
+                echo ">> Erasing failed. Please check the device and try again."
+            fi
+        else
+            echo ">> Erasing aborted by user."
+        fi
+    else
+        echo ">> No SD-Card found at /dev/sda."
+    fi
+}
 
-echo "[=============== Prepare Sd-Card Tool ===============]"
+
+echo "[=================== Prepare SD-Card Tool ===================]"
 usage
 require_sudo_privilege
 umount_partitions
+erase_sd_card
