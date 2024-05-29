@@ -35,6 +35,7 @@ umount_partitions()
         echo ">> Partitions unmounted"
     else
         echo ">> No partitions found for unmounting."
+        exit 1
     fi
 }
 
@@ -50,12 +51,15 @@ erase_sd_card()
                 echo ">> Erasing completed successfully."
             else
                 echo ">> Erasing failed. Please check the device and try again."
+                exit 1
             fi
         else
             echo ">> Erasing aborted by user."
+            exit 1
         fi
     else
         echo ">> No SD-Card found at /dev/${SDC_PAR}."
+        exit 1
     fi
 }
 
@@ -71,12 +75,15 @@ flash_sd_card()
                 echo ">> Flashing completed successfully."
             else
                 echo ">> Flashing failed. Please check the device and try again."
+                exit 1
             fi
         else
             echo ">> Flashing aborted by user."
+            exit 1
         fi
     else
         echo ">> No SD-Card found at /dev/${SDC_PAR}."
+        exit 1
     fi
 }
 
@@ -91,17 +98,36 @@ extract_wic_img()
             echo ">> Exctracting completed successfully."
         else
             echo ">> Exctracting failed."
+            exit 1
         fi
     else
         echo ">> No b2z image found."
+        exit 1
     fi
 }
-
 
 echo "[=================== Prepare SD-Card Tool ===================]"
 usage
 require_sudo_privilege
-umount_partitions
-erase_sd_card
-extract_wic_img
+case ${ACT_VAR} in
+
+    flash)
+        umount_partitions
+        erase_sd_card
+        extract_wic_img
+        flash_sd_card
+    ;;
+    erase)
+        umount_partitions
+        erase_sd_card
+    ;;
+    unmount)
+        umount_partitions
+    ;;
+    extract)
+        extract_wic_img
+    ;;
+    *)
+        usage
+esac
 echo "[=========================== Done ===========================]"
