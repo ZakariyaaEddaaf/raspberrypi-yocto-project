@@ -46,7 +46,7 @@ erase_sd_card()
         read -p ">> Are you sure you want to erase /dev/${SDC_PAR}? (yes/y/no): " confirm
         if [[ "$confirm" == "yes" || "$confirm" == "y" ]]; then
             echo ">> Erasing in progress..."
-            dd if=/dev/zero of=/dev/${SDC_PAR} bs=1024M status=progress
+            dd if=/dev/zero of=/dev/${SDC_PAR} bs=5024M status=progress
             if [ $? -eq 0 ]; then
                 echo ">> Erasing completed successfully."
             else
