@@ -1,10 +1,17 @@
 #!/bin/bash
 
-NUM_OF_ARGS=$#
+NUM_ARG=$#
+ACT_VAR=${1}
+SDC_PAR=${2}
+IMG_DIR="../build/tmp/deploy/images/raspberrypi4-64"
+IMG_BZ2="eddaaf-image-minimal-raspberrypi4-64-20240526211022.rootfs.wic.bz2"
+IMG_WIC="eddaaf-image-minimal-raspberrypi4-64-20240526211022.rootfs.wic"
+IMG_EXT="${IMG_DIR}/${IMG_BZ2}"
+
 usage()
 {
-    if [ "${NUM_OF_ARGS}" -ne 1 ];then
-            echo ">> Usage: $(basename $0) <action>"
+    if [ "${NUM_ARG}" -ne 2 ];then
+            echo ">> Usage: $(basename $0) <action> <patition>"
             exit 1
     fi
 }
@@ -19,8 +26,8 @@ require_sudo_privilege()
 umount_partitions() 
 {
     echo ">> Unmounting partitions..."
-    if ls /dev/sda* >/dev/null 2>&1; then
-        for partition in /dev/sda*; do
+    if ls /dev/${SDC_PAR}* >/dev/null 2>&1; then
+        for partition in /dev/${SDC_PAR}*; do
             if [ -b "$partition" ]; then
                 umount "$partition" 2>/dev/null && echo ">> Unmounted $partition"
             fi
@@ -34,11 +41,11 @@ umount_partitions()
 erase_sd_card() 
 {
     echo ">> Erasing SD-Card..."
-    if ls /dev/sda* >/dev/null 2>&1; then
-        read -p ">> Are you sure you want to erase /dev/sda? (yes/y/no): " confirm
+    if ls /dev/${SDC_PAR}* >/dev/null 2>&1; then
+        read -p ">> Are you sure you want to erase /dev/${SDC_PAR}? (yes/y/no): " confirm
         if [[ "$confirm" == "yes" || "$confirm" == "y" ]]; then
             echo ">> Erasing in progress..."
-            dd if=/dev/zero of=/dev/sda bs=1024M status=progress
+            dd if=/dev/zero of=/dev/${SDC_PAR} bs=1024M status=progress
             if [ $? -eq 0 ]; then
                 echo ">> Erasing completed successfully."
             else
@@ -48,7 +55,45 @@ erase_sd_card()
             echo ">> Erasing aborted by user."
         fi
     else
-        echo ">> No SD-Card found at /dev/sda."
+        echo ">> No SD-Card found at /dev/${SDC_PAR}."
+    fi
+}
+
+flash_sd_card()
+{
+    echo ">> Flashing SD-Card..."
+    if ls /dev/${SDC_PAR}* >/dev/null 2>&1; then
+        read -p ">> Are you sure you want to flash /dev/${SDC_PAR}? (yes/y/no): " confirm
+        if [[ "$confirm" == "yes" || "$confirm" == "y" ]]; then
+            echo ">> Flashing in progress..."
+            dd if=${IMG_WIC} of=/dev/${SDC_PAR} bs=8M status=progress
+            if [ $? -eq 0 ]; then
+                echo ">> Flashing completed successfully."
+            else
+                echo ">> Flashing failed. Please check the device and try again."
+            fi
+        else
+            echo ">> Flashing aborted by user."
+        fi
+    else
+        echo ">> No SD-Card found at /dev/${SDC_PAR}."
+    fi
+}
+
+extract_wic_img()
+{
+    echo ">> Extracting b2z image..."
+    if ls ${IMG_EXT} > /dev/null 2>&1;then
+        cp ${IMG_EXT} .
+        echo ">> Extract in progress..."
+        bunzip2 ${IMG_BZ2}
+        if [ $? -eq 0 ]; then
+            echo ">> Exctracting completed successfully."
+        else
+            echo ">> Exctracting failed."
+        fi
+    else
+        echo ">> No b2z image found."
     fi
 }
 
@@ -58,3 +103,5 @@ usage
 require_sudo_privilege
 umount_partitions
 erase_sd_card
+extract_wic_img
+echo "[=========================== Done ===========================]"
